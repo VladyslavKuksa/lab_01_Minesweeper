@@ -1,0 +1,2 @@
+[flake8]
+output-file=flake-report.html
