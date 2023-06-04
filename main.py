@@ -14,8 +14,9 @@ MINE_COUNT = 10
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
-LIGHT_GRAY = (200, 200, 200)
-RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+CYAN = (0, 255, 255)
+GREEN = (0, 128, 0)
 
 # Ініціалізація Pygame
 pygame.init()
@@ -36,16 +37,21 @@ class Cell:
 
     def draw(self):
         if self.revealed:
-            pygame.draw.rect(screen, LIGHT_GRAY, (self.x, self.y, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, GRAY, (self.x, self.y, CELL_SIZE, CELL_SIZE))
             if self.mine:
-                pygame.draw.circle(screen, RED, (self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2), CELL_SIZE // 4)
+                pygame.draw.circle(screen, BLACK, (self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2), CELL_SIZE // 4)
             elif self.adjacent_mines > 0:
                 font = pygame.font.Font(None, CELL_SIZE // 2)
-                text = font.render(str(self.adjacent_mines), True, BLACK)
+                text_color = BLACK
+                if self.adjacent_mines == 1:
+                    text_color = CYAN
+                elif self.adjacent_mines == 2:
+                    text_color = GREEN
+                text = font.render(str(self.adjacent_mines), True, text_color)
                 text_rect = text.get_rect(center=(self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2))
                 screen.blit(text, text_rect)
         else:
-            pygame.draw.rect(screen, WHITE, (self.x, self.y, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, BLUE, (self.x, self.y, CELL_SIZE, CELL_SIZE))
             if self.flagged:
                 font = pygame.font.Font(None, CELL_SIZE // 2)
                 text = font.render("F", True, BLACK)
@@ -78,12 +84,13 @@ for row in range(ROWS):
 
 # Головний цикл гри
 running = True
+game_over = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
+            if event.button == 1 and not game_over:
                 # Обробка лівого кліку миші
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
@@ -92,19 +99,22 @@ while running:
                     board[row][col].revealed = True
                     if board[row][col].mine:
                         # Гравець програв
-                        print("You lose!")
-                        running = False
-                    elif all(board[r][c].revealed or board[r][c].mine for r in range(ROWS) for c in range(COLS)):
-                        # Гравець переміг
-                        print("You win!")
-                        running = False
-            elif event.button == 3:
+                        game_over = True
+            elif event.button == 3 and not game_over:
                 # Обробка правого кліку миші
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].revealed:
                     board[row][col].flagged = not board[row][col].flagged
+
+    # Перевірка перемоги
+    if not game_over:
+        mine_count = sum(cell.mine and not cell.flagged for row in board for cell in row)
+        unrevealed_count = sum(not cell.revealed for row in board for cell in row)
+        if mine_count == 0 and unrevealed_count == MINE_COUNT:
+            # Гравець переміг
+            game_over = True
 
     # Оновлення екрану
     screen.fill(BLACK)
