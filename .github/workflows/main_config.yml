@@ -10,26 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Клонирование кода
         uses: actions/checkout@v2
       
-      - name: Set up Python
+      - name: Установка Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.x
       
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: pip install -r requirements.txt
       
-      - name: Run tests
+      - name: Установка pytest
+        run: pip install pytest
+      
+      - name: Запуск тестов
         run: pytest
       
-      - name: Build and package
+      - name: Сборка и упаковка
         run: |
           python setup.py build
           python setup.py sdist bdist_wheel
       
-      - name: Publish artifacts
+      - name: Публикация артефактов
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
