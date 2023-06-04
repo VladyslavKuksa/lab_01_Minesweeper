@@ -10,29 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Клонирование кода
+      - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Установка Python
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
+          node-version: 16
       
-      - name: Установка зависимостей
+      - name: Install dependencies
         run: pip install -r requirements.txt
       
-      - name: Установка pytest
-        run: pip install pytest
-      
-      - name: Запуск тестов
+      - name: Run tests
         run: pytest
       
-      - name: Сборка и упаковка
+      - name: Build and package
         run: |
           python setup.py build
           python setup.py sdist bdist_wheel
       
-      - name: Публикация артефактов
+      - name: Publish artifacts
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
