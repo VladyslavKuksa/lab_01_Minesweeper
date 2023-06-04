@@ -16,7 +16,7 @@ WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
 BLUE = (0, 0, 255)
 CYAN = (0, 255, 255)
-GREEN = (0, 128, 0)
+GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # Ініціалізація Pygame
@@ -61,6 +61,7 @@ class Cell:
                 text_rect = text.get_rect(center=(self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2))
                 screen.blit(text, text_rect)
 
+
 # Генерація дошки
 board = []
 for row in range(ROWS):
@@ -87,13 +88,12 @@ for row in range(ROWS):
 
 # Головний цикл гри
 running = True
-game_over = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and not game_over:
+            if event.button == 1:
                 # Обробка лівого кліку миші
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
@@ -102,22 +102,19 @@ while running:
                     board[row][col].revealed = True
                     if board[row][col].mine:
                         # Гравець програв
-                        game_over = True
-            elif event.button == 3 and not game_over:
+                        print("You lose!")
+                        running = False
+                    elif all(board[r][c].revealed or board[r][c].mine for r in range(ROWS) for c in range(COLS)):
+                        # Гравець переміг
+                        print("You win!")
+                        running = False
+            elif event.button == 3:
                 # Обробка правого кліку миші
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].revealed:
                     board[row][col].flagged = not board[row][col].flagged
-
-    # Перевірка перемоги
-    if not game_over:
-        mine_count = sum(cell.mine and not cell.flagged for row in board for cell in row)
-        unrevealed_count = sum(not cell.revealed for row in board for cell in row)
-        if mine_count == 0 and unrevealed_count == MINE_COUNT:
-            # Гравець переміг
-            game_over = True
 
     # Оновлення екрану
     screen.fill(BLACK)
@@ -128,3 +125,5 @@ while running:
     clock.tick(FPS)
 
 pygame.quit()
+
+
