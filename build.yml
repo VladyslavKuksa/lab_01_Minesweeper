@@ -20,4 +20,3 @@ jobs:
 
       - name: Run Game
         run: main.py  # Запуск головного файлу гри
-
