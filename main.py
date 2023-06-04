@@ -2,8 +2,8 @@ import pygame
 import random
 
 # Константи
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 500
+HEIGHT = 500
 ROWS = 10
 COLS = 10
 CELL_SIZE = 50
@@ -76,11 +76,14 @@ for row in range(ROWS):
 
 # Головний цикл гри
 running = True
+game_over = False
+victory = False
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN and not game_over:
             if event.button == 1:
                 # Обробка лівого кліку миші
                 pos = pygame.mouse.get_pos()
@@ -90,7 +93,7 @@ while running:
                     board[row][col].revealed = True
                     if board[row][col].mine:
                         # Гравець програв
-                        running = False
+                        game_over = True
             elif event.button == 3:
                 # Обробка правого кліку миші
                 pos = pygame.mouse.get_pos()
@@ -99,6 +102,18 @@ while running:
                 if not board[row][col].revealed:
                     board[row][col].flagged = not board[row][col].flagged
 
+    # Перевірка перемоги
+    if not game_over:
+        unrevealed_count = 0
+        for row in range(ROWS):
+            for col in range(COLS):
+                if not board[row][col].revealed and not board[row][col].mine:
+                    unrevealed_count += 1
+        if unrevealed_count == MINE_COUNT:
+            # Гравець переміг
+            game_over = True
+            victory = True
+
     # Оновлення екрану
     screen.fill(BLACK)
     for row in range(ROWS):
@@ -106,5 +121,11 @@ while running:
             board[row][col].draw()
     pygame.display.flip()
     clock.tick(FPS)
+
+# Виведення повідомлення про перемогу або програш
+if victory:
+    print("You win!")
+else:
+    print("You lose!")
 
 pygame.quit()
