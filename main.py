@@ -126,3 +126,4 @@ while running:
 
 # Завершение Pygame
 pygame.quit()
+
