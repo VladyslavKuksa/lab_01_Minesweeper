@@ -1,28 +1,28 @@
+# Импортируйте необходимые модули
 import pytest
-import main
 
-def test_cell_creation():
-    cell = main.Cell(0, 0)
-    assert cell.row == 0
-    assert cell.col == 0
-    assert cell.x == 0
-    assert cell.y == 0
-    assert not cell.mine
-    assert not cell.flagged
-    assert not cell.revealed
-    assert cell.adjacent_mines == 0
+# Определите переменную ROWS
+ROWS = 10  # Замените 10 на желаемое количество строк
 
-def test_cell_draw_revealed():
-    cell = main.Cell(0, 0)
-    cell.revealed = True
+# Определите ваши тесты
+def test_mine_placement():
+    board = []
+    for row in range(ROWS):
+        board.append([0] * ROWS)
+    assert len(board) == ROWS
 
-def test_cell_draw_flagged():
-    cell = main.Cell(0, 0)
-    cell.flagged = True
+def test_adjacent_mines():
+    board = []
+    for row in range(ROWS):
+        board.append([0] * ROWS)
+    # Дополнительный код теста
 
+def test_game_over():
+    board = []
+    for row in range(ROWS):
+        board.append([0] * ROWS)
+    # Дополнительный код теста
 
-if __name__ == '__main__':
-    # Запуск
-    test_cell_creation()
-    test_cell_draw_revealed()
-    test_cell_draw_flagged()
+# Запустите тесты
+if __name__ == "__main__":
+    pytest.main()

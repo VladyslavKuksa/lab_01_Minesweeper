@@ -1,7 +1,8 @@
+import pytest
 import pygame
 import random
 
-# Константи
+# Константы
 WIDTH = 500
 HEIGHT = 500
 ROWS = 10
@@ -10,7 +11,7 @@ CELL_SIZE = 50
 FPS = 30
 MINE_COUNT = 10
 
-# Кольори
+# Колори
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
@@ -19,12 +20,12 @@ CYAN = (0, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# Ініціалізація Pygame
+# Инициализация Pygame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-# Клас комірки
+# Класс ячейки
 class Cell:
     def __init__(self, row, col):
         self.row = row
@@ -61,22 +62,21 @@ class Cell:
                 text_rect = text.get_rect(center=(self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2))
                 screen.blit(text, text_rect)
 
-
-# Генерація дошки
+# Генерация доски
 board = []
 for row in range(ROWS):
     board.append([])
     for col in range(COLS):
         board[row].append(Cell(row, col))
 
-# Розміщення мін
+# Размещение мин
 mines = random.sample(range(ROWS * COLS), MINE_COUNT)
 for mine in mines:
     row = mine // COLS
     col = mine % COLS
     board[row][col].mine = True
 
-# Підрахунок кількості сусідніх мін для кожної комірки
+# Подсчет количества соседних мин для каждой ячейки
 for row in range(ROWS):
     for col in range(COLS):
         if not board[row][col].mine:
@@ -86,7 +86,7 @@ for row in range(ROWS):
                         if board[row + i][col + j].mine:
                             board[row][col].adjacent_mines += 1
 
-# Головний цикл гри
+# Главный игровой цикл
 running = True
 while running:
     for event in pygame.event.get():
@@ -94,29 +94,29 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                # Обробка лівого кліку миші
+                # Обработка левого клика мыши
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].flagged:
                     board[row][col].revealed = True
                     if board[row][col].mine:
-                        # Гравець програв
+                        # Игрок проиграл
                         print("You lose!")
                         running = False
                     elif all(board[r][c].revealed or board[r][c].mine for r in range(ROWS) for c in range(COLS)):
-                        # Гравець переміг
+                        # Игрок победил
                         print("You win!")
                         running = False
             elif event.button == 3:
-                # Обробка правого кліку миші
+                # Обработка правого клика мыши
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].revealed:
                     board[row][col].flagged = not board[row][col].flagged
 
-    # Оновлення екрану
+    # Обновление экрана
     screen.fill(BLACK)
     for row in range(ROWS):
         for col in range(COLS):
@@ -124,4 +124,5 @@ while running:
     pygame.display.flip()
     clock.tick(FPS)
 
+# Завершение Pygame
 pygame.quit()
