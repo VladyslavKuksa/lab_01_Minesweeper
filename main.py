@@ -2,7 +2,7 @@ import pytest
 import pygame
 import random
 
-# Константы
+# Constants
 WIDTH = 500
 HEIGHT = 500
 ROWS = 10
@@ -11,7 +11,6 @@ CELL_SIZE = 50
 FPS = 30
 MINE_COUNT = 10
 
-# Колори
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
@@ -20,12 +19,12 @@ CYAN = (0, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# Инициализация Pygame
+# Initialization Pygame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-# Класс ячейки
+# Cell class
 class Cell:
     def __init__(self, row, col):
         self.row = row
@@ -40,9 +39,9 @@ class Cell:
     def draw(self):
         if self.revealed:
             pygame.draw.rect(screen, GRAY, (self.x, self.y, CELL_SIZE, CELL_SIZE))
-            pygame.draw.rect(screen, BLACK, (self.x, self.y, CELL_SIZE, CELL_SIZE), 1)  # Додано рамку
+            pygame.draw.rect(screen, BLACK, (self.x, self.y, CELL_SIZE, CELL_SIZE), 1)
             if self.mine:
-                pygame.draw.circle(screen, RED, (self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2), CELL_SIZE // 4)  # Змінено колір на червоний
+                pygame.draw.circle(screen, RED, (self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2), CELL_SIZE // 4)
             elif self.adjacent_mines > 0:
                 font = pygame.font.Font(None, CELL_SIZE // 2)
                 if self.adjacent_mines == 1:
@@ -55,28 +54,28 @@ class Cell:
                 screen.blit(text, text_rect)
         else:
             pygame.draw.rect(screen, BLUE, (self.x, self.y, CELL_SIZE, CELL_SIZE))
-            pygame.draw.rect(screen, BLACK, (self.x, self.y, CELL_SIZE, CELL_SIZE), 1)  # Додано рамку
+            pygame.draw.rect(screen, BLACK, (self.x, self.y, CELL_SIZE, CELL_SIZE), 1)  
             if self.flagged:
                 font = pygame.font.Font(None, CELL_SIZE // 2)
                 text = font.render("F", True, BLACK)
                 text_rect = text.get_rect(center=(self.x + CELL_SIZE // 2, self.y + CELL_SIZE // 2))
                 screen.blit(text, text_rect)
 
-# Генерация доски
+# Board generation
 board = []
 for row in range(ROWS):
     board.append([])
     for col in range(COLS):
         board[row].append(Cell(row, col))
 
-# Размещение мин
+# Placement of mines
 mines = random.sample(range(ROWS * COLS), MINE_COUNT)
 for mine in mines:
     row = mine // COLS
     col = mine % COLS
     board[row][col].mine = True
 
-# Подсчет количества соседних мин для каждой ячейки
+# Counting the number of neighboring mines for each cell
 for row in range(ROWS):
     for col in range(COLS):
         if not board[row][col].mine:
@@ -86,7 +85,7 @@ for row in range(ROWS):
                         if board[row + i][col + j].mine:
                             board[row][col].adjacent_mines += 1
 
-# Главный игровой цикл
+# Main game loop
 running = True
 while running:
     for event in pygame.event.get():
@@ -94,29 +93,29 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                # Обработка левого клика мыши
+                # Handling the left mouse click
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].flagged:
                     board[row][col].revealed = True
                     if board[row][col].mine:
-                        # Игрок проиграл
+                        # Lose
                         print("You lose!")
                         running = False
                     elif all(board[r][c].revealed or board[r][c].mine for r in range(ROWS) for c in range(COLS)):
-                        # Игрок победил
+                        # Win
                         print("You win!")
                         running = False
             elif event.button == 3:
-                # Обработка правого клика мыши
+                # Right click
                 pos = pygame.mouse.get_pos()
                 col = pos[0] // CELL_SIZE
                 row = pos[1] // CELL_SIZE
                 if not board[row][col].revealed:
                     board[row][col].flagged = not board[row][col].flagged
 
-    # Обновление экрана
+    # Screen refresh
     screen.fill(BLACK)
     for row in range(ROWS):
         for col in range(COLS):
@@ -124,6 +123,6 @@ while running:
     pygame.display.flip()
     clock.tick(FPS)
 
-# Завершение Pygame
+# Completion Pygame
 pygame.quit()
 
