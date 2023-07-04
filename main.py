@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 # Constants
 WIDTH = 500
 HEIGHT = 500
