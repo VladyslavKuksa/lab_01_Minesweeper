@@ -1,6 +1,5 @@
 import pytest
-
-ROWS = 10
+from main import ROWS
 
 def test_mine_placement():
     board = []
@@ -8,15 +7,6 @@ def test_mine_placement():
         board.append([0] * ROWS)
     assert len(board) == ROWS
 
-def test_adjacent_mines():
-    board = []
-    for row in range(ROWS):
-        board.append([0] * ROWS)
-
-def test_game_over():
-    board = []
-    for row in range(ROWS):
-        board.append([0] * ROWS)
-
 if __name__ == "__main__":
     pytest.main()
+
